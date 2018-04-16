@@ -1,0 +1,119 @@
+<div class="container" ng-controller="propertiesController" id="ng-app">
+	<div ng-class="message.class" ng-hide="message.hidden">{{message.text}}</div>
+	<div class="properties-category">
+		<div class="category-header">
+			Lift
+		</div>
+		<table style="width: 100%">
+			<tr>
+				<td class="prop-left">
+					Method:
+				</td>
+				<td class="prop-right">
+					<select ng-model="properties.liftMethod" class="input">
+						<option value="dir">Local Directory</option>
+						<option value="ftp">FTP</option>
+					</select>
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'dir'">
+				<td class="prop-left">
+					Directory Path:
+				</td>
+				<td class="prop-right">
+					<input class="input-text" ng-model="properties.dir.path">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'dir'">
+				<td class="prop-left">
+				</td>
+				<td class="prop-right">
+					<button type="button" class="btn btn-green" ng-click="testDir()">
+						Check Path:
+					</button>
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+					Host
+				</td>
+				<td class="prop-right">
+					<input class="input-text">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+					Port:
+				</td>
+				<td class="prop-right">
+					<input class="input-text">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+					Username:
+				</td>
+				<td class="prop-right">
+					<input class="input-text">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+					Password:
+				</td>
+				<td class="prop-right">
+					<input class="input-text">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+					Remote Path:
+				</td>
+				<td class="prop-right">
+					<input class="input-text">
+				</td>
+			</tr>
+			<tr ng-if="properties.liftMethod === 'ftp'">
+				<td class="prop-left">
+				</td>
+				<td class="prop-right">
+					<button type="button" class="btn btn-green" ng-click="testFtp()">
+						Test Connection:
+					</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="properties-category">
+		<div class="category-header">
+			Ship
+		</div>
+		<table style="width: 100%">
+			<tr>
+				<td class="prop-left">
+					WebSocket Host:
+				</td>
+				<td class="prop-right">
+					<input class="input-text" ng-model="properties.ws.url">
+				</td>
+			</tr>
+			<tr>
+				<td class="prop-left">
+					WebSocket Port:
+				</td>
+				<td class="prop-right">
+					<input class="input-text" ng-model="properties.ws.port">
+				</td>
+			</tr>
+			<tr>
+				<td class="prop-left">
+				</td>
+				<td class="prop-right">
+					<button type="button" class="btn btn-green" ng-click="testWs()">
+						Test Connection
+					</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

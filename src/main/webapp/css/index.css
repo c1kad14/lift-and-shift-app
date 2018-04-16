@@ -1,0 +1,143 @@
+body {
+    padding: 5px;
+    margin: 0;
+    line-height: 1.5;
+    font-family: Arial;
+}
+
+div.container {
+    padding: 0;
+    margin: 0;
+}
+
+div.header, div.footer {
+    color: white;
+    background-color: grey;
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    text-align: center;
+}
+
+div.block {
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+div.properties-category {
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding-bottom: 5px;
+}
+
+div.category-header {
+    color: white;
+    background-color: grey;
+    margin-bottom: 5px;
+    border-radius: 2px 2px 0px 0px;
+    text-align: center;
+}
+
+.btn {
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 5px;
+    border-width: 0;
+    font-weight: bold;
+    color: white;
+}
+
+.btn-nav {
+    background-color: deepskyblue;
+}
+
+.btn-nav-active {
+    background-color: darkseagreen !important;
+}
+
+.btn-red {
+    background-color: red;
+}
+
+.btn-orange {
+    background-color: darkorange;
+}
+
+.btn-blue {
+    background-color: deepskyblue;
+}
+
+.btn-green {
+    background-color: darkseagreen;
+}
+
+textarea.log {
+    margin: 0 5px 0 5px;
+    padding: 3px;
+    height: calc(100% - 68px);
+    width: calc(100% - 18px);
+}
+
+div.log {
+    height: calc(100vh - 210px);
+}
+
+input.follow-box {
+    margin: 0;
+    vertical-align: middle;
+}
+
+td.prop-right {
+    width: 50%;
+    text-align: left;
+}
+
+td.prop-left {
+    width: 50%;
+    text-align: right;
+}
+
+.input {
+    width: 300px;
+    height: 24px;
+}
+
+.input-text {
+    width: 296px;
+    height: 18px;
+}
+
+div.message-ok {
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: green;
+    color: white;
+    text-align: center;
+}
+
+div.message-info {
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: dodgerblue;
+    color: white;
+    text-align: center;
+}
+
+div.message-error {
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: orangered;
+    color: white;
+    text-align: center;
+}

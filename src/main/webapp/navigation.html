@@ -1,0 +1,29 @@
+<div class="block" ng-controller="navigationController" id="ng-app">
+	<table width="100%">
+		<tr>
+			<td style="width: 40%">
+				<button class="btn btn-nav" id="propertiesButton"
+				        ng-class="{'btn-nav-active': isActive('/properties') || isActive('/')}"
+				        ng-click="changeRoute($event)">
+					Properties
+				</button>
+				<button class="btn btn-nav" id="logsButton"
+				        ng-class="{'btn-nav-active': isActive('/logs')}"
+				        ng-click="changeRoute($event)">
+					Logs
+				</button>
+				<button class="btn btn-nav" id="propertiesManagementButton"
+				        ng-class="{'btn-nav-active': isActive('/propertiesManagement')}"
+				        ng-click="changeRoute($event)">
+					Properties management
+				</button>
+			</td>
+			<td style="width: 20%; text-align: center">
+
+			</td>
+			<td style="width: 40%; text-align: right">
+				<button class="btn btn-red" hg-click="shutdown1()">Shutdown</button>
+			</td>
+		</tr>
+	</table>
+</div>

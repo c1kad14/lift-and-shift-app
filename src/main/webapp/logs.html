@@ -1,0 +1,15 @@
+<div class="properties-category log" ng-controller="logController" id="ng-app">
+	<div class="category-header">
+		Application Log
+	</div>
+	<textarea class="log" readonly="" id="log"></textarea>
+	<div style="width: inherit; text-align: right; padding: 5px">
+		<button class="btn btn-blue" ng-click="followToggle()">
+			Follow
+			<input type="checkbox" onclick="return false" class="follow-box">
+		</button>
+		<button class="btn btn-orange" ng-click="clearLog()">
+			Clear
+		</button>
+	</div>
+</div>
