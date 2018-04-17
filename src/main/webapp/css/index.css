@@ -141,3 +141,23 @@ div.message-error {
     color: white;
     text-align: center;
 }
+
+div.status-np {
+    font-weight: bold;
+    animation: blinker 2s linear infinite;
+    color: orangered;
+    vertical-align: middle;
+}
+
+div.status-p {
+    font-weight: bold;
+    animation: blinker 2s linear infinite;
+    color: green;
+    vertical-align: middle;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0.3;
+    }
+}

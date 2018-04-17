@@ -1,143 +1,209 @@
-angular.module("app").controller("propertiesController", function ($scope, $http) {
+angular.module("app").controller("propertiesController", function ($scope, $http, $timeout) {
 
 	$scope.properties = {};
-	$scope.properties.liftMethod = "dir";
 
 	$scope.message = {};
 	$scope.message.hidden = true;
 	$scope.message.class = "";
 	$scope.message.text = "";
 
+	$scope.init = function () {
+		$http({
+			method: 'GET',
+			url: '/properties'
+		}).then(function successCallback(response) {
+			if (response.data.liftMethod !== undefined) {
+				$scope.properties = response.data;
+				setMessage("Properties loaded from app", "info");
+			} else {
+				$scope.properties = {
+					liftMethod: "dir",
+					url: "",
+					frequency: "60"
+				};
+				setMessage("Empty app properties, loaded default", "info");
+			}
+		}, function errorCallback(response) {
+			setMessage("Error loading app properties", "error");
+		});
+	};
+
 	$scope.testDir = function () {
+		var errorMessage = validateDir();
+		if (errorMessage !== "") {
+			setMessage(errorMessage, "error");
+			return;
+		}
 		$http({
 			method: "POST",
 			url: "test?value=dir&path=" + encodeURI($scope.properties.dir.path)
 		}).then(function successCallback(response) {
-			setMessage(response.data)
+			setMessage(response.data.message, response.data.status.toLowerCase())
 		}, function errorCallback(response) {
-			$scope.message = {
-				hidden: false,
-				class: "message-error",
-				text: "Error sending test request"
-			};
+			setMessage("Error sending test request", "error");
 		});
 	};
 
-	function setMessage(message) {
+	$scope.testWs = function () {
+		var errorMessage = validateWs();
+		if (errorMessage !== "") {
+			setMessage(errorMessage, "error");
+			return;
+		}
+		$http({
+			method: "POST",
+			url: "test?value=ws&url=" + encodeURI($scope.properties.url)
+		}).then(function successCallback(response) {
+			setMessage(response.data.message, response.data.status.toLowerCase())
+		}, function errorCallback(response) {
+			setMessage("Error sending test request", "error");
+		});
+	};
+
+	$scope.testProcessing = function () {
+		var validDir = validateDir();
+		var validFtp = validateWs();
+		if (validDir !== "" || validFtp !== "") {
+			setMessage(validDir + " " + validFtp, "error");
+			return;
+		}
+		$http({
+			method: "POST",
+			url: "test?value=ship"
+		}).then(function successCallback(response) {
+			setMessage(response.data.message, response.data.status.toLowerCase())
+		}, function errorCallback(response) {
+			setMessage("Error sending test request", "error");
+		});
+	};
+
+	$scope.stopProcessing = function () {
+		$http({
+			method: "DELETE",
+			url: "process"
+		}).then(function successCallback(response) {
+			setMessage("Processing stopped", "ok")
+		}, function errorCallback(response) {
+			setMessage("Error sending stop processing request", "error");
+		});
+	};
+
+	$scope.startProcessing = function () {
+		var validDir = validateDir();
+		var validFtp = validateWs();
+		if (validDir !== "" || validFtp !== "") {
+			setMessage(validDir + " " + validFtp, "error");
+			return;
+		}
+		$http({
+			method: "POST",
+			url: "process"
+		}).then(function successCallback(response) {
+			setMessage("Processing started", "ok")
+		}, function errorCallback(response) {
+			setMessage(response.data.message, "error");
+		});
+	};
+
+	$scope.updateProperties = function () {
+		var validDir = validateDir();
+		var validFtp = validateWs();
+		if (validDir !== "" || validFtp !== "") {
+			setMessage(validDir + " " + validFtp, "error");
+			return;
+		}
+		$http({
+			method: "POST",
+			url: "properties",
+			data: $scope.properties
+		}).then(function successCallback(response) {
+			setMessage("Properties updated", "ok")
+		}, function errorCallback(response) {
+			setMessage(response.data.message, "error");
+		});
+	};
+
+	$scope.saveProperties = function () {
+		var filename = "properties.json";
+		var json = angular.toJson($scope.properties);
+		var blob = new Blob([json], {type: "text/plain"});
+		if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+			window.navigator.msSaveOrOpenBlob(blob, filename);
+		} else {
+			var e = document.createEvent("MouseEvents");
+			var a = document.createElement("a");
+			a.download = filename;
+			a.href = window.URL.createObjectURL(blob);
+			a.dataset.downloadurl = ["text/plain", a.download, a.href].join(":");
+			e.initEvent("click", true, false, window,
+				0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			a.dispatchEvent(e);
+		}
+	};
+
+	function validateDir() {
+		if ($scope.properties.dir === undefined
+			|| $scope.properties.dir.path === undefined
+			|| $scope.properties.dir.path === "") {
+			return "Please enter directory path";
+		} else {
+			return "";
+		}
+	}
+
+	function validateWs() {
+		if ($scope.properties.url === undefined
+			|| $scope.properties.url === "") {
+			return "Please enter WebSocket URL";
+		} else {
+			return "";
+		}
+	}
+
+	function setMessage(message, status) {
 		$scope.message.hidden = false;
-		$scope.message.class = "message-" + message.status.toLowerCase();
-		$scope.message.text = message.message;
+		$scope.message.class = "message-" + status;
+		$scope.message.text = message;
 		hideMessage();
 	}
-	
-	function hideMessage() {
-		setTimeout(function () {
-			$scope.message.hidden = true;
-		}, 5000)
-	}
-// 	$scope.info = {};
-// 	$scope.index = 0;
-//
-// 	$scope.init = function () {
-// 		sharingDataService.getProperties().then(function (data) {
-// 			$scope.info = sharingDataService.getData();
-// 			console.log($scope.info);
-// 			initTriggers();
-// 		});
-// 	};
-//
-// 	$scope.submit = function () {
-// 		preSubmit();
-// 		$http({
-// 			method: 'POST',
-// 			url: 'properties?json=true',
-// 			headers: {
-// 				'Content-Type': 'application/json'
-// 			},
-// 			data: JSON.stringify($scope.info)
-// 		}).success(function (data) {
-// 			console.log(data);
-// 			$scope.info = data;
-// 		}).error(function (data) {
-// 			$scope.message = data.message;
-// 			console.log("error saving");
-// 		});
-// 	};
-//
-// 	$scope.isVisibleProperty = function (category, property) {
-// 		if (property.dependsUpon == undefined || property.dependsUpon == "") {
-// 			return true;
-// 		}
-//
-// 		var dependsUpon = property.dependsUpon.split(".");
-// 		var dependsUponPropertyName = dependsUpon[0];
-// 		var dependsUponPropertyValue = dependsUpon[1];
-// 		if (getPropertyByName(category, dependsUponPropertyName).value !== dependsUponPropertyValue) {
-// 			console.log(property.name + " is not visible because it depends on " + property.dependsUpon);
-// 			return false;
-// 		}
-//
-// 		return true;
-// 	};
-//
-// 	var getPropertyByName = function (category, propertyName) {
-// 		console.log(propertyName);
-// 		var properties = category.propertyEntries;
-// 		for (var i = 0; i < properties.length; i++) {
-// 			var property = properties[i];
-// 			if (property.name == propertyName) {
-// 				return property;
-// 			}
-// 		}
-// 	};
-//
-// 	$scope.addTrigger = function () {
-// 		var newTrigger = {
-// 			// TODO: add zone, nature, group initialization
-// 			unitStatus: ""
-// 		};
-// 		$scope.triggers.push(newTrigger);
-// 	};
-//
-// 	$scope.removeTrigger = function (index) {
-// 		var remove = confirm("Are you sure you want to delete this row?");
-// 		if (remove === true) {
-// 			$scope.triggers.splice(index, 1);
-// 		}
-// 	};
-//
-// 	function initTriggers() {
-// 		$scope.triggers = JSON.parse(getTriggers().value);
-// 	}
-//
-// 	function preSubmit() {
-// 		removeEmptyTriggers();
-// 		setTriggersValue();
-// 	}
-//
-// 	function removeEmptyTriggers() {
-// 		$scope.triggers = $scope.triggers.filter(function (trigger) {
-// 			// TODO: add zone and nature check
-// 			return trigger.unitStatus !== "";
-// 		});
-// 	}
-//
-// 	function setTriggersValue() {
-// 		var triggers = getTriggers();
-// 		triggers.value = angular.toJson($scope.triggers);
-// 	}
-//
-// 	function getTriggers() {
-// 		var categories = $scope.info.categories;
-// 		var filteredCategories = categories.filter(function (category) {
-// 			return category.name === 'TriggerConfiguration';
-// 		});
-// 		var triggerConfiguration = filteredCategories[0];
-// 		var propertyEntries  = triggerConfiguration.propertyEntries;
-// 		var filteredPropertyEntries = propertyEntries.filter(function (propertyEntry) {
-// 			return propertyEntry.name === 'triggers';
-// 		});
-// 		return filteredPropertyEntries[0];
-// 	}
 
+	function hideMessage() {
+		$timeout(function () {
+			$scope.message.hidden = true;
+		}, 10000)
+	}
+
+	$scope.populateProperties = function($fileContent) {
+		console.log($fileContent);
+		if ($fileContent.indexOf("liftMethod") < 0) {
+			setMessage("Wrong file", "error");
+			return;
+		}
+		$scope.properties = JSON.parse($fileContent);
+	};
+
+	$scope.openProperties = function () {
+		document.getElementById("open-file").click();
+	};
+
+});
+
+angular.module("app").directive("onReadFile", function ($parse) {
+	return {
+		restrict: "A",
+		scope: false,
+		link: function(scope, element, attrs) {
+			console.log(attrs);
+			var fn = $parse(attrs.onReadFile);
+			element.on("change", function(onChangeEvent) {
+				var reader = new FileReader();
+				reader.onload = function(onLoadEvent) {
+					scope.$apply(function() {
+						fn(scope, {$fileContent:onLoadEvent.target.result});
+					});
+				};
+				reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+			});
+		}
+	};
 });

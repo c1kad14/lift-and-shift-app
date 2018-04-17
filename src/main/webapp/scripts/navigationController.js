@@ -1,4 +1,9 @@
-angular.module('app').controller("navigationController", function ($scope, $location, $http) {
+angular.module('app').controller("navigationController", function ($scope, $location, $http, $timeout) {
+
+	$scope.status = {
+		message: "NOT PROCESSING",
+		class: "status-np"
+	};
 
 	$scope.shutdown = function () {
 		console.log("test");
@@ -19,13 +24,39 @@ angular.module('app').controller("navigationController", function ($scope, $loca
 		if (event.currentTarget.id === "logsButton") {
 			$location.path("/logs");
 		}
-		if (event.currentTarget.id === "propertiesManagementButton") {
-			$location.path("/propertiesManagement");
-		}
 	};
 
 	$scope.isActive = function (location) {
 		return location === $location.path();
 	};
 
+	$scope.init = function () {
+		openStatusWebsocket();
+	};
+
+	function openStatusWebsocket() {
+		var socket = new WebSocket("ws://localhost:8080/status");
+
+		socket.onmessage = function (event) {
+			if (event.data === "true") {
+				$scope.status = {
+					message: "PROCESSING",
+					class: "status-p"
+				};
+			} else {
+				$scope.status = {
+					message: "NOT PROCESSING",
+					class: "status-np"
+				};
+			}
+		};
+
+		socket.onclose = function (event) {
+			openStatusWebsocket();
+		};
+
+		socket.onerror = function (error) {
+			socket.close();
+		};
+	}
 });

@@ -1,11 +1,18 @@
 package com.spillman.client.service;
 
+import com.spillman.client.ProcessingException;
+import com.spillman.client.Processor;
 import com.spillman.client.model.TestResponse;
 import com.spillman.client.model.TestResponseStatus;
+import com.spillman.client.servlet.ProcessServlet;
+import com.spillman.client.ship.ShipEndpoint;
+import com.spillman.client.ship.ShipEndpointFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 
 @Slf4j
 public class TestService {
@@ -22,11 +29,27 @@ public class TestService {
 			case "ftp":
 				throw new IllegalArgumentException("FTP test not implemented");
 //				break;
+			case "ws":
+				result = testWebsocket(request);
+				break;
+			case "ship":
+				result = testShip();
+				break;
 			default:
 				log.debug("Unknown pickup type: {}", pickupType);
 				result = unknownResponse;
 		}
 		return result;
+	}
+
+	private TestResponse testShip() {
+		try {
+			Processor.sendFilesFromDirectory();
+		}
+		catch (ProcessingException ex) {
+			return new TestResponse(TestResponseStatus.ERROR, ex.getMessage());
+		}
+		return new TestResponse(TestResponseStatus.OK, "Files exported successfully");
 	}
 
 	private TestResponse testDirectory(HttpServletRequest request) {
@@ -49,7 +72,33 @@ public class TestService {
 			message = "Directory exists";
 		}
 		return new TestResponse(status, message);
+	}
 
+	private TestResponse testWebsocket(HttpServletRequest request) {
+		String url = request.getParameter("url");
+		ShipEndpointFactory factory = new ShipEndpointFactory();
+		ShipEndpoint endpoint = null;
+		try {
+			endpoint = factory.buildEndpoint(url);
+		}
+		catch (Exception ex) {
+			log.error("Error testing websocket connection: {}", ex.getMessage());
+			return new TestResponse(TestResponseStatus.ERROR, "Error connecting to server");
+		}
+		try {
+			endpoint.testConnection();
+		}
+		catch (IOException ex) {
+			log.error("Error sending websocket test message: {}", ex.getMessage());
+			return new TestResponse(TestResponseStatus.ERROR, "Error sending test message");
+		}
+		try {
+			endpoint.disconnect();
+		}
+		catch (IOException ex) {
+			log.error("Error disconnecting websocket: {}", ex.getMessage());
+		}
+		return new TestResponse(TestResponseStatus.OK, "Connection tested");
 	}
 
 }

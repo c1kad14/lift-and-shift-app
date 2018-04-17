@@ -1,4 +1,4 @@
-<div class="container" ng-controller="propertiesController" id="ng-app">
+<div class="container" ng-controller="propertiesController" id="ng-app" ng-init="init()">
 	<div ng-class="message.class" ng-hide="message.hidden">{{message.text}}</div>
 	<div class="properties-category">
 		<div class="category-header">
@@ -91,18 +91,11 @@
 		<table style="width: 100%">
 			<tr>
 				<td class="prop-left">
-					WebSocket Host:
+					WebSocket URL:
 				</td>
 				<td class="prop-right">
-					<input class="input-text" ng-model="properties.ws.url">
-				</td>
-			</tr>
-			<tr>
-				<td class="prop-left">
-					WebSocket Port:
-				</td>
-				<td class="prop-right">
-					<input class="input-text" ng-model="properties.ws.port">
+					<input ng-model="properties.url"
+					       class="input-text" ng-model="properties.ws.url">
 				</td>
 			</tr>
 			<tr>
@@ -115,5 +108,56 @@
 				</td>
 			</tr>
 		</table>
+	</div>
+	<div class="properties-category">
+		<div class="category-header">
+			Schedule
+		</div>
+		<table style="width: 100%">
+			<tr>
+				<td class="prop-left">
+					Frequency:
+				</td>
+				<td class="prop-right">
+					<select ng-model="properties.frequency" class="input">
+						<option value="60">1 hour</option>
+						<option value="1440">24 hours</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="properties-category">
+		<div class="category-header">
+			Properties management
+		</div>
+		<div style="text-align: center">
+			<button type="button" class="btn btn-green" ng-click="updateProperties()">
+				Update
+			</button>
+			<button type="button" class="btn btn-green" ng-click="saveProperties()">
+				Save to file
+			</button>
+			<button type="button" class="btn btn-green" ng-click="openProperties()">
+				Open from file
+			</button>
+			<input id="open-file" hidden type="file" on-read-file="populateProperties($fileContent)" >
+		</div>
+	</div>
+	<div class="properties-category">
+		<div class="category-header">
+			Process
+		</div>
+		<div style="text-align: center">
+			<button type="button" class="btn btn-green" ng-click="testProcessing()">
+				TEST
+			</button>
+			<button type="button" class="btn btn-green" ng-click="startProcessing()">
+				START
+			</button>
+			<button type="button" class="btn btn-green" ng-click="stopProcessing()">
+				STOP
+			</button>
+		</div>
 	</div>
 </div>
