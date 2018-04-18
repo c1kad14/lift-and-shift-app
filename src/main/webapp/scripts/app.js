@@ -7,8 +7,6 @@ app.config(function ($routeProvider) {
 		templateUrl: "properties.html"
 	}).when("/logs", {
 		templateUrl: "logs.html"
-	}).when("/propertiesManagement", {
-		templateUrl: "propertiesManagement.html"
 	}).otherwise({
 		redirectTo: '/'
 	});
