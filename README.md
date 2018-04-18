@@ -1,2 +1,2 @@
-# lift-and-shift-app
-Lift &amp; ship app 
+to start:
+/target/bin/webapp or /target/bin/webapp.bat
